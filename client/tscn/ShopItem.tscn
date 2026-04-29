@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3 uid="uid://bis8h6toeif54"]
+[gd_scene format=3 uid="uid://bis8h6toeif54"]
 
-[ext_resource type="Script" uid="uid://t1uihqoa1hrp" path="res://ShopItem.gd" id="1_vfou5"]
+[ext_resource type="Script" uid="uid://t1uihqoa1hrp" path="res://gd/ShopItem.gd" id="1_vfou5"]
 
 [node name="ShopItem" type="Button"]
 offset_right = 8.0
