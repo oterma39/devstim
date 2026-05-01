@@ -17,6 +17,17 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 config/name="devstim"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 
+[autoload]
+
+GameState="*uid://v7u0x2yo0wdv"
+
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+
 [rendering]
 
 renderer/rendering_method="gl_compatibility"
