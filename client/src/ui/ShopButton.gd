@@ -50,7 +50,7 @@ func _on_mouse_exited_tooltip() -> void:
 	Events.hide_tooltip.emit()
 
 # res://src/ui/ShopButton.gd
-
+# res://src/ui/ShopButton.gd
 func _pressed() -> void:
 	var tw = create_tween()
 	tw.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
@@ -59,46 +59,20 @@ func _pressed() -> void:
 	
 	if not data:
 		return
-	
-	var identifier = data.id if "id" in data else (data.item_id if "item_id" in data else data.item_name)
-	
-	match data.purchase_type:
-		BaseItem.PurchaseType.LINES:
-			var required_cost = int(round(economy_manager.get_next_cost(identifier, 1)))
-			var current_lines = GameState.uncommitted_lines
-			
-			if current_lines >= required_cost:
-				var before_lines = current_lines
-				data.apply_effect()
-				GameState.uncommitted_lines = before_lines - required_cost
-				var after_lines = GameState.uncommitted_lines
-				
-				print("--- [구입 완료 - 코드] ---")
-				print("구입 전 코드: %d | 지불할 코드: %d | 차감 후 코드: %d" % [before_lines, required_cost, after_lines])
-				
-				_update_ui()
-			else:
-				print("구입 실패: 코드가 부족합니다.")
-				
-		# res://src/ui/ShopButton.gd
-		# res://src/ui/ShopButton.gd
-
-		BaseItem.PurchaseType.FUNDS:
-			var required_cost = int(round(economy_manager.get_next_cost(identifier, 1)))
-			var current_funds = int(round(GameState.funds))
-			
-			if current_funds >= required_cost:
-				var before_funds = current_funds
-				
-				GameState.funds = before_funds - required_cost
-				data.apply_effect()
-				
-				# 🔥 [수정 포인트] 구매 후 레벨을 1 증가시켜 다음 레벨 비용이 오르도록 처리
-				data.level = (data.level if "level" in data else 1) + 1
-				
-				var after_funds = int(round(GameState.funds))
-				
-				print("--- [구입 완료 - 자금] ---")
-				print("구입 전 자금: %d | 지불할 자금: %d | 차감 후 자금: %d" % [before_funds, required_cost, after_funds])
-				
-				_update_ui()
+		
+	# 프로젝트(ProjectData)인 경우
+	if data is ProjectData:
+		if data.can_afford():
+			data.apply_effect()
+			_update_ui()
+		else:
+			print("구입 실패: 코드 줄이 부족합니다.")
+		return
+		
+	# 일반 업그레이드 또는 스태프인 경우
+	if data.can_afford():
+		data.consume_cost()
+		data.apply_effect()
+		_update_ui()
+	else:
+		print("구입 실패: 재화가 부족합니다.")

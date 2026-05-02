@@ -1,34 +1,46 @@
+# res://src/resources/BaseItem.gd
 extends Resource
-class_name BaseItem # 다른 스크립트에서 부모로 인식하게 함
+class_name BaseItem
+
 enum PurchaseType {
 	FUNDS,       # 자금 ($) 소모
 	LINES,       # 코드 줄 소모
 	BOTH         # 둘 다 소모
 }
+
 @export var id: String = ""
-@export var description: String # 이 부분이 빠져 있으면 에러가 발생합니다.
+@export var description: String
 @export var item_name: String
-@export var base_cost: float # 기본 가격 (또는 기본 수치)
-@export var purchase_type: PurchaseType = PurchaseType.FUNDS # 구입 타입 기본값 지정
+@export var base_cost: float
+@export var purchase_type: PurchaseType = PurchaseType.FUNDS
 @export var level: int = 1
 
-# 아이템의 구매 가능 여부를 체크하는 공통 함수
+# 구매 가능 여부 확인
 func can_afford() -> bool:
 	match purchase_type:
 		PurchaseType.FUNDS:
 			return GameState.funds >= base_cost
 		PurchaseType.LINES:
-			return GameState.uncommitted_lines >= base_cost
-		PurchaseType.BOTH:
-			# 예: base_cost는 funds, 추가 변수(예: required_lines)는 코드 줄로 검사 가능
-			return false # 필요에 따라 로직 확장 가능
+			return GameState.uncommitted_lines >= int(base_cost)
 	return false
-	
-# 공통 로직: 돈 깎기
-func consume_cost():
-	print("consume_cost")
-	GameState.funds -= base_cost
 
-# 가상 함수: 자식들이 오버라이드할 함수
-func apply_effect():
-	pass
+# 공통 로직: 상점에서 호출하여 재화 차감 및 로그 출력
+func consume_cost():
+	match purchase_type:
+		PurchaseType.FUNDS:
+			var before_funds = GameState.funds
+			GameState.funds -= base_cost
+			GameState.funds_changed.emit(GameState.funds)
+			print("--- [구입 완료 - 자금] ---")
+			print("구입 전 자금: %d | 지불할 자금: %d | 차감 후 자금: %d" % [before_funds, base_cost, GameState.funds])
+			
+		PurchaseType.LINES:
+			var before_lines = GameState.uncommitted_lines
+			GameState.uncommitted_lines -= int(base_cost)
+			GameState.lines_changed.emit(GameState.uncommitted_lines)
+			print("--- [구입 완료 - 코드] ---")
+			print("구입 전 코드: %d | 지불할 코드: %d | 차감 후 코드: %d" % [before_lines, base_cost, GameState.uncommitted_lines])
+
+# 가상 함수 (자식 클래스에서 오버라이드)
+func apply_effect() -> bool:
+	return false
