@@ -8,11 +8,11 @@ func setup(p_data: BaseItem):
 	data = p_data
 	pivot_offset = size / 2 
 	
-	if not mouse_entered.is_connected(_on_mouse_entered):
-		mouse_entered.connect(_on_mouse_entered)
-	if not mouse_exited.is_connected(_on_mouse_exited):
-		mouse_exited.connect(_on_mouse_exited)
-		
+	# 마우스 진입 시 툴팁 표시 시그널 전송
+	if not mouse_entered.is_connected(_on_mouse_entered_tooltip):
+		mouse_entered.connect(_on_mouse_entered_tooltip)
+	if not mouse_exited.is_connected(_on_mouse_exited_tooltip):
+		mouse_exited.connect(_on_mouse_exited_tooltip)		
 	_update_ui()
 
 # --- 1. UI 업데이트 함수 (다국어 tr() 적용) ---
@@ -27,15 +27,13 @@ func _update_ui():
 			text = "%s\n($%.0f)" % [translated_name, data.base_cost]
 
 # --- 2. 애니메이션 로직 ---
-func _on_mouse_entered() -> void:
-	var tw = create_tween()
-	tw.tween_property(self, "scale", Vector2(1.05, 1.05), 0.1).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	
+func _on_mouse_entered_tooltip() -> void:
+	if data:
+		# 끄는 과정 없이 바로 새로운 데이터를 전달
+		Events.show_tooltip.emit(data)
 
-func _on_mouse_exited() -> void:
-	var tw = create_tween()
-	tw.tween_property(self, "scale", Vector2(1.0, 1.0), 0.1).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	
+func _on_mouse_exited_tooltip() -> void:
+	Events.hide_tooltip.emit()
 
 # --- 3. 통합 _pressed 로직 (로그 및 구입 처리) ---
 func _pressed() -> void:

@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://cgh0dbfr5dwlp"]
 
 [ext_resource type="Script" uid="uid://b3p6xlk0v4p8n" path="res://src/core/Main.gd" id="1_p6l2b"]
+[ext_resource type="Script" uid="uid://75two5y0rdwh" path="res://src/ui/Tooltip.gd" id="2_fkw84"]
 
 [node name="Main" type="Node2D" unique_id=865464106]
 script = ExtResource("1_p6l2b")
@@ -76,6 +77,33 @@ layout_mode = 2
 
 [node name="Upgrade" type="VBoxContainer" parent="UI/Root/ShopArea" unique_id=264069679]
 custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+
+[node name="Tooltip" type="Control" parent="UI" unique_id=316458527]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("2_fkw84")
+
+[node name="Panel" type="PanelContainer" parent="UI/Tooltip" unique_id=705261292]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="VBox" type="VBoxContainer" parent="UI/Tooltip/Panel" unique_id=527519488]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="UI/Tooltip/Panel/VBox" unique_id=127878951]
+layout_mode = 2
+
+[node name="Desc" type="Label" parent="UI/Tooltip/Panel/VBox" unique_id=132396384]
+layout_mode = 2
+
+[node name="Cost" type="Label" parent="UI/Tooltip/Panel/VBox" unique_id=1661692119]
 layout_mode = 2
 
 [connection signal="pressed" from="UI/Root/WorkArea/CodingButton" to="." method="_on_coding_button_pressed"]
