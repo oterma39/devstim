@@ -1,0 +1,4 @@
+Category,Item_ID,Name_Key,Base_Cost,Effect_Value,Description
+project,proj_website,Website Project,10,50,Build a simple website
+staff,staff_junior,Junior Developer,20,1,Hires a junior dev
+upgrade,upg_keyboard,Better Keyboard,10,1,Improves typing speed
