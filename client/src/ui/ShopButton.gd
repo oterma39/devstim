@@ -50,7 +50,6 @@ func _on_mouse_exited_tooltip() -> void:
 	Events.hide_tooltip.emit()
 
 # res://src/ui/ShopButton.gd
-# res://src/ui/ShopButton.gd
 func _pressed() -> void:
 	var tw = create_tween()
 	tw.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
@@ -60,7 +59,7 @@ func _pressed() -> void:
 	if not data:
 		return
 		
-	# 프로젝트(ProjectData)인 경우
+	# 1. 프로젝트(ProjectData)인 경우
 	if data is ProjectData:
 		if data.can_afford():
 			data.apply_effect()
@@ -69,7 +68,7 @@ func _pressed() -> void:
 			print("구입 실패: 코드 줄이 부족합니다.")
 		return
 		
-	# 일반 업그레이드 또는 스태프인 경우
+	# 2. 일반 업그레이드 또는 스태프 등 일반 아이템인 경우
 	if data.can_afford():
 		data.consume_cost()
 		data.apply_effect()

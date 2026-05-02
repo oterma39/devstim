@@ -15,7 +15,6 @@ enum PurchaseType {
 @export var purchase_type: PurchaseType = PurchaseType.FUNDS
 @export var level: int = 1
 
-# 구매 가능 여부 확인
 func can_afford() -> bool:
 	match purchase_type:
 		PurchaseType.FUNDS:
@@ -24,7 +23,7 @@ func can_afford() -> bool:
 			return GameState.uncommitted_lines >= int(base_cost)
 	return false
 
-# 공통 로직: 상점에서 호출하여 재화 차감 및 로그 출력
+# 상점에서 호출하여 재화를 차감하는 공통 함수
 func consume_cost():
 	match purchase_type:
 		PurchaseType.FUNDS:
@@ -41,6 +40,5 @@ func consume_cost():
 			print("--- [구입 완료 - 코드] ---")
 			print("구입 전 코드: %d | 지불할 코드: %d | 차감 후 코드: %d" % [before_lines, base_cost, GameState.uncommitted_lines])
 
-# 가상 함수 (자식 클래스에서 오버라이드)
 func apply_effect() -> bool:
 	return false
