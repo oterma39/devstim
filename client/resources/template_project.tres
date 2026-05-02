@@ -1,7 +1,0 @@
-[gd_resource type="Resource" script_class="ProjectData" format=3 uid="uid://htri0ce3yh0q"]
-
-[ext_resource type="Script" uid="uid://dus3lrdv5fd18" path="res://src/resources/ProjectData.gd" id="1_twgal"]
-
-[resource]
-script = ExtResource("1_twgal")
-metadata/_custom_type_script = "uid://dus3lrdv5fd18"
