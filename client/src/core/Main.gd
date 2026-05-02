@@ -3,7 +3,7 @@ extends Node
 
 # 1. 상점 버튼 씬 미리 불러오기
 const SHOP_BUTTON_SCENE = preload("res://src/ui/ShopButton.tscn")
-
+const TooltipScript = preload("res://src/ui/Tooltip.gd")
 # 2. 버튼들이 들어갈 컨테이너 연결
 @onready var staff_container = $UI/Root/ShopArea/Staffs
 @onready var upgrade_container = $UI/Root/ShopArea/Upgrade
@@ -31,7 +31,7 @@ func _ready():
 	# 클릭 버튼 시그널 연결
 	if work_button and not work_button.pressed.is_connected(_on_work_button_pressed):
 		work_button.pressed.connect(_on_work_button_pressed)
-
+	
 func _on_funds_changed(new_funds: float):
 	if funds_label:
 		funds_label.text = "Funds: $%d" % new_funds
@@ -53,10 +53,15 @@ func _setup_shop():
 	print("2. 업그레이드 폴더에서 읽어온 개수: ", upgrades.size())
 	_generate_buttons(upgrades, upgrade_container)
 	
-	# 3. 프로젝트 생성
+	# 3. 프로젝트 생성 (수정된 부분: 경로 확인 및 디버깅 로그 추가)
 	var projects = _load_resources("res://resources/projects/")
 	print("3. 프로젝트 폴더에서 읽어온 개수: ", projects.size())
-	_generate_buttons(projects, project_container)
+	
+	# 프로젝트 컨테이너가 null이 아니고 데이터가 있다면 버튼 생성
+	if projects.size() > 0:
+		_generate_buttons(projects, project_container)
+	else:
+		print("경고: res://resources/projects/ 경로에서 프로젝트 데이터를 찾을 수 없습니다.")
 
 ## 폴더 내의 .tres 파일을 모두 읽어오는 함수
 func _load_resources(path: String) -> Array:
