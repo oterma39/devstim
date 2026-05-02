@@ -10,6 +10,7 @@ func can_afford() -> bool:
 
 func consume_cost():
 	# 1. 코드 줄을 감소시키고 시그널 발송
+	print("create app")
 	GameState.uncommitted_lines -= required_lines
 
 func apply_effect():

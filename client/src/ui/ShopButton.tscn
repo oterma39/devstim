@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://dx4pxxqawirbx" path="res://src/ui/ShopButton.gd" id="1_45epq"]
 
 [node name="ShopButton" type="Button" unique_id=1171923814]
+custom_minimum_size = Vector2(50, 50)
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0

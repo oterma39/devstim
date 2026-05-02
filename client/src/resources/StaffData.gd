@@ -7,12 +7,15 @@ class_name StaffData
 @export var lines_per_second: int = 1  # 직원만의 고유 변수
 
 # 부모의 기능을 가져와서 직원에게 맞게 완성
-func apply_effect() -> bool:
-	if can_afford():
-		consume_cost()
+func apply_effect():
+	# 자금 차감은 버튼에서 진행하지 않으므로 여기서 직접 처리할 수 있습니다.
+	# 단, 2중 차감을 막기 위해 상점 버튼이 아닌 데이터에서만 차감
+	if GameState.funds >= base_cost:
+		GameState.funds -= base_cost
 		GameState.total_lines_per_second += lines_per_second
-		print(item_name + " 고용 성공!")
+		
+		# 상태 갱신 신호 발송
+		GameState.funds_changed.emit(GameState.funds)
+		print("직원 고용 완료! 초당 생산량: ", GameState.total_lines_per_second)
 		return true
-	
-	print("자금 부족!")
 	return false

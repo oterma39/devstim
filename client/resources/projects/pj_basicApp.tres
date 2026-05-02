@@ -4,6 +4,9 @@
 
 [resource]
 script = ExtResource("1_tf0f6")
+reward_funds = 100.0
+required_lines = 10
 item_name = "base app"
 base_cost = 10.0
+purchase_type = 1
 metadata/_custom_type_script = "uid://dus3lrdv5fd18"

@@ -9,6 +9,7 @@ func apply_effect() -> bool:
 		consume_cost()
 		# GameState에 정의된 클릭 파워 변수를 증가시킴
 		GameState.manual_coding_power += click_power_increase
+		#GameState.lines_per_second += lps_increase
 		print(item_name + " 업그레이드 완료!")
 		return true
 	
