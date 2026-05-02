@@ -15,13 +15,19 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="devstim"
-run/main_scene="uid://bq50xn7x1ksho"
+run/main_scene="uid://cgh0dbfr5dwlp"
 config/features=PackedStringArray("4.6", "GL Compatibility")
-config/icon="res://icon.svg"
 
 [autoload]
 
-SaveManager="*res://gd/SaveManager.gd"
+GameState="*uid://v7u0x2yo0wdv"
+
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
 
 [rendering]
 

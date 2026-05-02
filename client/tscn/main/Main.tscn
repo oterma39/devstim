@@ -1,0 +1,81 @@
+[gd_scene format=3 uid="uid://cgh0dbfr5dwlp"]
+
+[ext_resource type="Script" uid="uid://b3p6xlk0v4p8n" path="res://src/core/Main.gd" id="1_p6l2b"]
+
+[node name="Main" type="Node2D" unique_id=865464106]
+script = ExtResource("1_p6l2b")
+
+[node name="UI" type="CanvasLayer" parent="." unique_id=1052588100]
+
+[node name="Root" type="Control" parent="UI" unique_id=946879568]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="ColorRect" parent="UI/Root" unique_id=175718714]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.14287826, 0.22719371, 0.28603163, 1)
+
+[node name="HUD" type="MarginContainer" parent="UI/Root" unique_id=1082879285]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="TopBar" type="HBoxContainer" parent="UI/Root/HUD" unique_id=2037610662]
+layout_mode = 2
+
+[node name="LinesLabel" type="Label" parent="UI/Root/HUD/TopBar" unique_id=234009562]
+layout_mode = 2
+
+[node name="FundsLabel" type="Label" parent="UI/Root/HUD/TopBar" unique_id=1347161877]
+layout_mode = 2
+
+[node name="WorkArea" type="CenterContainer" parent="UI/Root" unique_id=1159557452]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -336.0
+offset_bottom = 4.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CodingButton" type="Button" parent="UI/Root/WorkArea" unique_id=1252416465]
+custom_minimum_size = Vector2(300, 100)
+layout_mode = 2
+text = "WORK CODING"
+
+[node name="ShopArea" type="HBoxContainer" parent="UI/Root" unique_id=1027434719]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -312.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="Staffs" type="VBoxContainer" parent="UI/Root/ShopArea" unique_id=103254192]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+
+[node name="Projects" type="VBoxContainer" parent="UI/Root/ShopArea" unique_id=179723083]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+
+[node name="Upgrade" type="VBoxContainer" parent="UI/Root/ShopArea" unique_id=264069679]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+
+[connection signal="pressed" from="UI/Root/WorkArea/CodingButton" to="." method="_on_coding_button_pressed"]

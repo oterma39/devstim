@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://bu7a8ldsd64ih"]
+
+[ext_resource type="Script" uid="uid://dx4pxxqawirbx" path="res://src/ui/ShopButton.gd" id="1_45epq"]
+
+[node name="ShopButton" type="Button" unique_id=1171923814]
+custom_minimum_size = Vector2(50, 50)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_45epq")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=1573566280]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Icon" type="TextureRect" parent="HBoxContainer" unique_id=1768263055]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer" unique_id=1932026538]
+layout_mode = 2
+
+[node name="Name" type="Label" parent="HBoxContainer/VBoxContainer" unique_id=986366256]
+layout_mode = 2
+
+[node name="Price" type="Label" parent="HBoxContainer/VBoxContainer" unique_id=497465714]
+layout_mode = 2
