@@ -39,14 +39,14 @@ func load_items(path: String):
 		var base_cost = float(line[7]) if line.size() > 7 and line[7].is_valid_float() else 0.0
 		
 		var item_data = {
-			"category": category,
-			"item_id": item_id,
-			"name_key": name_key,
-			"desc_key": desc_key,
-			"base_cost": base_cost,
-			"growth_rate": float(line[8]) if line.size() > 8 else 0.1,
-			"effect_value": line[9] if line.size() > 9 else "",
-			"icon_path": line[10] if line.size() > 10 else ""
+			"Category": category,
+			"Item_id": item_id,
+			"Name_key": name_key,
+			"Desc_key": desc_key,
+			"Base_cost": base_cost,
+			"Growth_rate": float(line[8]) if line.size() > 8 else 0.1,
+			"Effect_value": line[9] if line.size() > 9 else "",
+			"Icon_path": line[10] if line.size() > 10 else ""
 		}
 		
 		# 2. Key(item_id)를 명확하게 지정하여 저장
@@ -56,7 +56,6 @@ func load_items(path: String):
 	print("  [성공] CSV 아이템 데이터 로드 완료, 최종 개수: ", count)
 	print("  [데이터] 저장된 items_db 키 목록: ", items_db.keys())
 	
-	# 데이터를 다 읽은 후 신호 발생
 	emit_signal("items_loaded")
 
 # 3. 스태프 이름 데이터 로드
@@ -109,4 +108,9 @@ func get_next_cost(item_id: String, current_level: int) -> float:
 		return 0.0
 		
 	var item = items_db[item_id]
-	return calculate_cost(item.base_cost, item.growth_rate, current_level)
+	
+	# [수정 포인트] 딕셔너리 형태의 데이터에 맞게 키("Base_cost", "Growth_rate")를 가져오도록 수정
+	var base_cost = float(item.get("Base_cost", 0.0))
+	var growth_rate = float(item.get("Growth_rate", 0.1))
+	
+	return calculate_cost(base_cost, growth_rate, current_level)

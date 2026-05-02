@@ -5,11 +5,12 @@ enum PurchaseType {
 	LINES,       # 코드 줄 소모
 	BOTH         # 둘 다 소모
 }
+@export var id: String = ""
 @export var description: String # 이 부분이 빠져 있으면 에러가 발생합니다.
 @export var item_name: String
 @export var base_cost: float # 기본 가격 (또는 기본 수치)
 @export var purchase_type: PurchaseType = PurchaseType.FUNDS # 구입 타입 기본값 지정
-
+@export var level: int = 1
 
 # 아이템의 구매 가능 여부를 체크하는 공통 함수
 func can_afford() -> bool:

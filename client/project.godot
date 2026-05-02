@@ -22,6 +22,7 @@ config/features=PackedStringArray("4.6", "GL Compatibility")
 
 GameState="*uid://v7u0x2yo0wdv"
 Events="*uid://dods2pu4fposi"
+EconomyManager="*uid://cr1o4l1shju0k"
 
 [display]
 

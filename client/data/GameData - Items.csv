@@ -1,5 +1,6 @@
 Category,Item_ID,Name_Key,Desc_Key,Korean (ko),English (en),Japanese (ja),Base_Cost,Growth_Rate (r),Effect_Value,Icon_Path
 Staff,신입_엔지니어,STR_ROLE_INTERN,STR_DESC_INTERN,인턴 (엔지니어),Intern,インターン,15,0.14,0.5 IPS,res://icons/s_intern.png
+Staff,숙련_프론트엔드,STR_ROLE_FE,STR_DESC_FE,프론트엔드,Front-end,フロントエンド,40,0.15,1.5 IPS,res://icons/s_frontend.png
 Staff,숙련_백엔드,STR_ROLE_BE,STR_DESC_BE,백엔드,Back-end,バックエンド,55,0.15,2.0 IPS,res://icons/s_backend.png
 Staff,베테랑_디자이너,STR_ROLE_DESIGNER,STR_DESC_DESIGNER,UI/UX 디자인,UI/UX Design,UI/UXデザイン,80,0.16,3.2 IPS,res://icons/s_designer.png
 Staff,미들급_기획자,STR_ROLE_PM,STR_DESC_PM,프로덕트 매니저,PM,PM,750,0.19,26.0 IPS,res://icons/s_pm.png

@@ -6,12 +6,16 @@ extends Control
 @onready var desc_label = $Panel/VBox/Desc
 @onready var cost_label = $Panel/VBox/Cost
 
+@onready var economy_manager = get_node_or_null("/root/EconomyManager")
+
 var current_tween: Tween
-var hide_timer: SceneTreeTimer # 지연 시간을 위한 타이머 변수
+var hide_timer: SceneTreeTimer
 
 func _ready() -> void:
 	visible = false
 	modulate.a = 0.0
+	
+	# 툴팁이 마우스 이벤트를 방해하지 않으면서 렌더링되도록 설정
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	
 	if has_node("/root/Events"):
@@ -22,28 +26,36 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	if visible:
+		# 부드럽게 마우스를 따라오도록 위치 설정
 		global_position = lerp(global_position, get_global_mouse_position() + Vector2(16, 16), 0.3)
 
 func _on_show_tooltip(item_data) -> void:
 	if not item_data:
 		return
 		
-	# 1. 끄기 위해 대기하던 타이머가 있다면 취소 (이벤트가 덮어씌워짐)
 	if hide_timer and hide_timer.time_left > 0:
-		hide_timer = null # 타이머 참조 해제
+		hide_timer = null
 		
 	if current_tween and current_tween.is_running():
 		current_tween.kill()
 		
-	# 2. 텍스트 즉시 갱신
 	title_label.text = tr(item_data.item_name)
 	desc_label.text = tr(item_data.description)
 	
+	var identifier = item_data.id if "id" in item_data else (item_data.item_id if "item_id" in item_data else item_data.item_name)
+	var current_level = item_data.level if "level" in item_data else 1
+	
+	var cost = 0.0
+	if economy_manager:
+		var raw_cost = economy_manager.get_next_cost(identifier, current_level)
+		cost = int(round(raw_cost)) # 동일한 사사오입 적용
+	
 	if item_data.purchase_type == 0: 
-		cost_label.text = "Cost: %s Lines" % str(item_data.base_cost)
+		cost_label.text = "Cost: $%d" % cost
 	else:
-		cost_label.text = "Cost: $%s" % str(item_data.base_cost)
-	# 툴팁이 켜지기 전에 마우스 위치로 위치를 즉시 초기화하여 좌상단 잔상 방지	
+		cost_label.text = "Cost: %d Lines" % cost
+		
+	# 위치 초기화
 	global_position = get_global_mouse_position() + Vector2(16, 16)
 
 	visible = true
@@ -54,13 +66,11 @@ func _on_show_tooltip(item_data) -> void:
 	current_tween.tween_property(self, "modulate:a", 1.0, 0.05)
 
 func _on_hide_tooltip() -> void:
-	# 3. 즉시 끄지 않고 0.05초의 여유(유예 시간)를 둡니다.
 	hide_timer = get_tree().create_timer(0.05)
 	await hide_timer.timeout
 	
-	# 유예 시간(0.05초)이 지난 후에도 여전히 다른 버튼이 안 눌렸을 때만 툴팁을 끕니다.
 	if hide_timer == null: 
-		return # 다른 버튼으로 넘어가서 타이머가 무효화된 경우
+		return
 		
 	var tween = create_tween()
 	tween.tween_property(self, "modulate:a", 0.0, 0.05)
