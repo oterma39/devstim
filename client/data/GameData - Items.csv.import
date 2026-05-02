@@ -6,10 +6,10 @@ uid="uid://bhak61r5ljgee"
 
 [deps]
 
-files=["res://data/GameData - Items.Item_ID.translation", "res://data/GameData - Items.Name.translation", "res://data/GameData - Items.Desc.translation", "res://data/GameData - Items.Korean (ko).translation", "res://data/GameData - Items.English (en).translation", "res://data/GameData - Items.Japanese (ja).translation", "res://data/GameData - Items.Base.translation", "res://data/GameData - Items.Growth.translation", "res://data/GameData - Items.Effect.translation", "res://data/GameData - Items.Icon.translation"]
+files=["res://data/GameData - Items.Item_ID.translation", "res://data/GameData - Items.Name.translation", "res://data/GameData - Items.Base.translation", "res://data/GameData - Items.Effect.translation", "res://data/GameData - Items.Description.translation"]
 
 source_file="res://data/GameData - Items.csv"
-dest_files=["res://data/GameData - Items.Item_ID.translation", "res://data/GameData - Items.Name.translation", "res://data/GameData - Items.Desc.translation", "res://data/GameData - Items.Korean (ko).translation", "res://data/GameData - Items.English (en).translation", "res://data/GameData - Items.Japanese (ja).translation", "res://data/GameData - Items.Base.translation", "res://data/GameData - Items.Growth.translation", "res://data/GameData - Items.Effect.translation", "res://data/GameData - Items.Icon.translation"]
+dest_files=["res://data/GameData - Items.Item_ID.translation", "res://data/GameData - Items.Name.translation", "res://data/GameData - Items.Base.translation", "res://data/GameData - Items.Effect.translation", "res://data/GameData - Items.Description.translation"]
 
 [params]
 
