@@ -27,3 +27,5 @@ layout_mode = 2
 
 [node name="Price" type="Label" parent="HBoxContainer/VBoxContainer" unique_id=497465714]
 layout_mode = 2
+
+[connection signal="pressed" from="." to="." method="_on_pressed"]

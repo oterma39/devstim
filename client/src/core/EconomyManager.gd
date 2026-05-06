@@ -1,100 +1,57 @@
 extends Node
 
-signal items_loaded
+var items_data = []
 
-var items_db: Dictionary = {}
-var staff_names: Array = []
+func load_csv():
+	print("\n===== [CSV LOAD START] =====")
 
-# -------------------------
-# CSV 로드 (아이템)
-# -------------------------
-func load_items(path: String):
-	items_db.clear()
+	items_data.clear()
+
+	var path = "res://data/GameData - Items.csv"
+	print("[PATH]", path)
 
 	var file = FileAccess.open(path, FileAccess.READ)
-	if not file:
-		print("❌ 파일 열기 실패:", path)
+	if file == null:
+		push_error("❌ 파일 열기 실패: " + path)
 		return
 
 	var header = file.get_csv_line()
-	print("CSV 헤더:", header)
+	print("[HEADER]", header)
 
 	while not file.eof_reached():
 		var row = file.get_csv_line()
-		if row.size() < header.size():
-			continue
 
-		var data = {}
-		for i in range(header.size()):
-			data[header[i]] = row[i]
-
-		var item = _parse_item(data)
-		if item:
-			items_db[item["id"]] = item
-
-	file.close()
-
-	print("아이템 로드 완료:", items_db.size())
-	print("키 목록:", items_db.keys())
-
-	emit_signal("items_loaded")
-
-
-# -------------------------
-# CSV 로드 (이름)
-# -------------------------
-func load_staff_names(path: String):
-	staff_names.clear()
-
-	var file = FileAccess.open(path, FileAccess.READ)
-	if not file:
-		print("❌ 이름 파일 열기 실패:", path)
-		return
-
-	file.get_csv_line() # header skip
-
-	while not file.eof_reached():
-		var row = file.get_csv_line()
+		# 빈 줄 스킵
 		if row.size() == 0:
 			continue
 
-		staff_names.append(row[0])
+		# ⭐ 핵심: 길이 안 맞으면 스킵
+		if row.size() < header.size():
+			print("⚠️ 잘못된 row 스킵:", row)
+			continue
 
-	file.close()
+		var data = {}
 
-	print("스태프 이름 로드:", staff_names.size())
+		for i in range(header.size()):
+			data[header[i]] = row[i]
 
+		items_data.append(data)
 
-# -------------------------
-# 아이템 파싱 (핵심)
-# -------------------------
-func _parse_item(data: Dictionary) -> Dictionary:
-	var category = str(data.get("Category", "")).strip_edges().to_lower()
+	print("[RESULT] 아이템 개수:", items_data.size())
+	print("===== [CSV LOAD END] =====\n")
 
-	var item = {
-		"id": data.get("Item_ID", ""),
-		"name_key": data.get("Name_Key", ""),
-		"category": category,
-		"base_cost": float(data.get("Base_Cost", "0")),
-		"effect_value": float(data.get("Effect_Value", "0")),
-		"cost_type": _get_cost_type(category),
-		"reward_funds": 0.0
-	}
+func create_item_instance(data: Dictionary) -> BaseItem:
+	var item = BaseItem.new()
 
-	# 프로젝트만 보상 있음
-	if category == "project":
-		item["reward_funds"] = float(data.get("Effect_Value", "0"))
+	item.id = data.get("Item_ID", "")
+	item.item_name = data.get("Name_Key", "")
+	item.category = data.get("Category", "").to_lower()
+
+	item.cost_fund = float(data.get("Cost_Fund", "0"))
+	item.cost_line = float(data.get("Cost_Line", "0"))
+	item.growth_rate = float(data.get("Growth_Rate (r)", "0.15"))
+
+	item.effect_lps = float(data.get("Effect_LPS", "0"))
+	item.effect_lpc = float(data.get("Effect_LPC", "0"))
 
 	return item
-
-
-# -------------------------
-# 비용 타입 결정
-# -------------------------
-func _get_cost_type(category: String) -> String:
-	match category:
-		"project":
-			return "lines"
-		"staff", "upgrade":
-			return "money"
-	return "money"

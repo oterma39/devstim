@@ -33,9 +33,11 @@ offset_bottom = 40.0
 layout_mode = 2
 
 [node name="LinesLabel" type="Label" parent="UI/Root/HUD/TopBar" unique_id=234009562]
+unique_name_in_owner = true
 layout_mode = 2
 
 [node name="FundsLabel" type="Label" parent="UI/Root/HUD/TopBar" unique_id=1347161877]
+unique_name_in_owner = true
 layout_mode = 2
 
 [node name="WorkArea" type="CenterContainer" parent="UI/Root" unique_id=1159557452]
@@ -65,17 +67,20 @@ offset_top = -312.0
 grow_horizontal = 2
 grow_vertical = 0
 
-[node name="Staffs" type="VBoxContainer" parent="UI/Root/ShopArea" unique_id=103254192]
+[node name="StaffContainer" type="VBoxContainer" parent="UI/Root/ShopArea" unique_id=103254192]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 size_flags_horizontal = 0
 
-[node name="Projects" type="VBoxContainer" parent="UI/Root/ShopArea" unique_id=179723083]
+[node name="ProjectContainer" type="VBoxContainer" parent="UI/Root/ShopArea" unique_id=179723083]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 
-[node name="Upgrade" type="VBoxContainer" parent="UI/Root/ShopArea" unique_id=264069679]
+[node name="UpgradeContainer" type="VBoxContainer" parent="UI/Root/ShopArea" unique_id=264069679]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 
-[connection signal="pressed" from="UI/Root/WorkArea/CodingButton" to="." method="_on_coding_button_pressed"]
+[connection signal="pressed" from="UI/Root/WorkArea/CodingButton" to="." method="_on_work_button_pressed"]

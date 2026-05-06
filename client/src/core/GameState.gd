@@ -1,34 +1,78 @@
 extends Node
 
-signal funds_changed(new_funds)
-signal lines_changed(new_lines)
-signal lps_changed(new_lps)
+signal funds_changed(value)
+signal lines_changed(value)
+signal item_updated(item_id)
 
-var funds: float = 0.0:
-	set(val):
-		funds = val
-		funds_changed.emit(funds)
+var funds: float = 0
+var lines: float = 0
+var uncommitted_lines: float = 0
 
-var uncommitted_lines: int = 0:
-	set(val):
-		uncommitted_lines = val
-		lines_changed.emit(uncommitted_lines)
+var manual_coding_power: float = 1.0
+var auto_lines_per_sec: float = 0.0
 
-# 👉 스태프 효과는 이걸 사용
-var total_lines_per_second: float = 0.0:
-	set(val):
-		total_lines_per_second = val
-		lps_changed.emit(total_lines_per_second)
+var items := {} # id → BaseItem
 
-var manual_coding_power: int = 1
+# =========================
+# 기본 루프
+# =========================
+func _process(delta):
+	lines += auto_lines_per_sec * delta
+	lines_changed.emit(lines)
+# =========================
+# 수동 작업
+# =========================
+func do_manual_work():
+	lines += manual_coding_power
+	lines_changed.emit(lines)
 
-# 내부 타이머
-var _timer_accumulator: float = 0.0
+# =========================
+# 구매
+# =========================
+func buy_item(item_id: String) -> bool:
+	if not items.has(item_id):
+		return false
 
+	var item = items[item_id]
 
-func _process(delta: float) -> void:
-	if total_lines_per_second > 0:
-		_timer_accumulator += delta
-		if _timer_accumulator >= 1.0:
-			_timer_accumulator -= 1.0
-			uncommitted_lines += int(total_lines_per_second)
+	var fund_cost = item.get_cost_fund()
+	var line_cost = item.get_cost_line()
+
+	# 🔥 비용 체크 (둘 다)
+	if funds < fund_cost:
+		return false
+	if lines < line_cost:
+		return false
+
+	# 🔥 차감
+	funds -= fund_cost
+	lines -= line_cost
+
+	item.level += 1
+
+	# 🔥 효과 적용
+	auto_lines_per_sec += item.effect_lps
+	manual_coding_power += item.effect_lpc
+
+	# 🔥 UI 갱신
+	funds_changed.emit(funds)
+	lines_changed.emit(lines)
+
+	return true
+
+# =========================
+# 효과 처리 (핵심)
+# =========================
+func _apply_effect(item):
+	match item.category:
+		"staff":
+			auto_lines_per_sec += item.effect_value
+
+		"upgrade":
+			manual_coding_power += item.effect_value
+
+		"project":
+			funds += item.reward_funds
+
+			# 프로젝트는 소모형이면 리셋
+			item.level = 0

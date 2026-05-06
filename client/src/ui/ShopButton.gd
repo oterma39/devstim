@@ -1,42 +1,45 @@
-extends Button
+extends Control
 
-var data: BaseItem
+var item_id: String
 
-@onready var name_label = $HBoxContainer/VBoxContainer/Name
-@onready var cost_label = $HBoxContainer/VBoxContainer/Price
+@onready var button = $"."
+@onready var label = $HBoxContainer/VBoxContainer/Name
 
+func setup(id: String):
+	item_id = id
 
-func setup(incoming_data: BaseItem):
-	data = incoming_data
+	# 노드 준비 안됐으면 대기
+	if not is_inside_tree():
+		await ready
+
 	_update_ui()
 
+func _ready():
+	GameState.item_updated.connect(_on_item_updated)
+	button.pressed.connect(_on_pressed)
+	
+func _on_pressed():
+	GameState.buy_item(item_id)
+
+func _on_item_updated(updated_id):
+	if updated_id == item_id:
+		_update_ui()
 
 func _update_ui():
-	if not data:
-		return
+	var item = GameState.items[item_id]
 
-	name_label.text = data.item_name
+	var fund_cost = item.get_cost_fund()
+	var line_cost = item.get_cost_line()
 
-	if data.cost_type == "money":
-		cost_label.text = "$%d" % data.base_cost
-	elif data.cost_type == "lines":
-		cost_label.text = "%d Lines" % data.base_cost
-
-	self.tooltip_text = "%s\nCost: %s" % [
-		data.item_name,
-		cost_label.text
+	var text = "%s Lv.%d" % [
+		item.item_name,
+		item.level
 	]
 
+	if fund_cost > 0:
+		text += " 💰%d" % int(fund_cost)
 
-func _pressed():
-	if not data:
-		return
+	if line_cost > 0:
+		text += " 🧾%d" % int(line_cost)
 
-	if not data.can_afford():
-		print("구매 불가:", data.item_name)
-		return
-
-	data.consume_cost()
-	data.apply_effect()
-
-	print("구매 완료:", data.item_name)
+	label.text = text

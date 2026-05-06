@@ -1,0 +1,19 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://cwghqfftbf0ua"
+
+[deps]
+
+files=["res://GameData - Items.Item_ID.translation", "res://GameData - Items.Name.translation", "res://GameData - Items.Desc.translation", "res://GameData - Items.Korean (ko).translation", "res://GameData - Items.English (en).translation", "res://GameData - Items.Japanese (ja).translation", "res://GameData - Items.Cost.translation", "res://GameData - Items.Cost.translation", "res://GameData - Items.Growth.translation", "res://GameData - Items.Effect.translation", "res://GameData - Items.Effect.translation", "res://GameData - Items.Icon.translation"]
+
+source_file="res://GameData - Items.csv"
+dest_files=["res://GameData - Items.Item_ID.translation", "res://GameData - Items.Name.translation", "res://GameData - Items.Desc.translation", "res://GameData - Items.Korean (ko).translation", "res://GameData - Items.English (en).translation", "res://GameData - Items.Japanese (ja).translation", "res://GameData - Items.Cost.translation", "res://GameData - Items.Cost.translation", "res://GameData - Items.Growth.translation", "res://GameData - Items.Effect.translation", "res://GameData - Items.Effect.translation", "res://GameData - Items.Icon.translation"]
+
+[params]
+
+compress=1
+delimiter=0
+unescape_keys=false
+unescape_translations=true

@@ -1,140 +1,136 @@
-extends Node
+extends Node2D
 
-# 씬
-const SHOP_BUTTON_SCENE = preload("res://src/ui/ShopButton.tscn")
+# =========================
+# UI 노드 참조
+# =========================
+@onready var staff_container = %StaffContainer
+@onready var upgrade_container = %UpgradeContainer
+@onready var project_container = %ProjectContainer
 
-# 컨테이너
-@onready var staff_container = $UI/Root/ShopArea/Staffs
-@onready var upgrade_container = $UI/Root/ShopArea/Upgrade
-@onready var project_container = $UI/Root/ShopArea/Projects
+@onready var funds_label = %FundsLabel
+@onready var lines_label = %LinesLabel
 
-# UI
-@onready var funds_label = $UI/Root/HUD/TopBar/FundsLabel
-@onready var lines_label = $UI/Root/HUD/TopBar/LinesLabel
-@onready var work_button = $UI/Root/WorkArea/CodingButton
 
+# =========================
+# 시작
+# =========================
 func _ready():
-	var economy_manager = get_tree().root.get_node_or_null("EconomyManager")
+	print("\n===== [MAIN READY START] =====")
 
-	if not economy_manager:
-		print("❌ EconomyManager 없음")
+	print("[CHECK] GameState:", GameState)
+	print("[CHECK] EconomyManager:", EconomyManager)
+
+	_setup_game()
+	_connect_signals()
+	_setup_shop()
+	_update_funds(GameState.funds)
+	_update_lines(GameState.uncommitted_lines)
+	print("===== [MAIN READY END] =====\n")
+
+
+# =========================
+# 초기화 (데이터 로드 + 인스턴스 생성)
+# =========================
+func _setup_game():
+	print("\n--- [SETUP GAME START] ---")
+
+	var em = EconomyManager
+
+	em.load_csv()
+	print("[DATA] items_data 개수:", em.items_data.size())
+
+	if em.items_data.size() == 0:
+		push_error("❌ CSV 데이터 없음")
 		return
 
-	# -------------------------
-	# UI 업데이트 연결
-	# -------------------------
-	if not GameState.funds_changed.is_connected(_on_funds_changed):
-		GameState.funds_changed.connect(_on_funds_changed)
+	GameState.items.clear()  # 🔥 중요: 중복 방지
 
-	if not GameState.lines_changed.is_connected(_on_lines_changed):
-		GameState.lines_changed.connect(_on_lines_changed)
+	for data in em.items_data:
+		var item = em.create_item_instance(data)
 
-	_on_funds_changed(GameState.funds)
-	_on_lines_changed(GameState.uncommitted_lines)
+		print("[ITEM]",
+			"id:", item.id,
+			"category:", item.category,
+			"cost_fund:", item.cost_fund,
+			"cost_line:", item.cost_line,
+			"lps:", item.effect_lps,
+			"lpc:", item.effect_lpc
+		)
 
-	# -------------------------
-	# 버튼 클릭 연결
-	# -------------------------
-	if work_button and not work_button.pressed.is_connected(_on_work_button_pressed):
-		work_button.pressed.connect(_on_work_button_pressed)
+		GameState.items[item.id] = item
 
-	# -------------------------
-	# 데이터 로드 & 시그널 연결
-	# -------------------------
-	if not economy_manager.items_loaded.is_connected(_setup_shop):
-		economy_manager.items_loaded.connect(_setup_shop)
+	print("[RESULT] GameState.items:", GameState.items.size())
+	print("--- [SETUP GAME END] ---\n")
 
-	economy_manager.load_items("res://data/GameData - Items.csv")
-	economy_manager.load_staff_names("res://data/GameData - StaffNames.csv")
+# =========================
+# 시그널 연결
+# =========================
+func _connect_signals():
+	print("\n--- [SIGNAL CONNECT] ---")
 
-	# 🔥 이미 로드된 경우 대비 (핵심)
-	if economy_manager.items_db.size() > 0:
-		print("이미 데이터 있음 → 바로 상점 생성")
-		_setup_shop()
+	GameState.funds_changed.connect(_update_funds)
+	GameState.lines_changed.connect(_update_lines)
 
-# -------------------------
+	print("✔ funds_changed 연결 완료")
+	print("✔ lines_changed 연결 완료")
+
+	print("--- [SIGNAL CONNECT END] ---\n")
+
+
+# =========================
 # UI 업데이트
-# -------------------------
-func _on_funds_changed(new_funds: float):
-	if funds_label:
-		funds_label.text = "Funds: $%d" % new_funds
+# =========================
+func _update_funds(value):
+	#print("[UI UPDATE] Funds →", value)
+	funds_label.text = "Funds: $%d" % int(value)
 
-func _on_lines_changed(new_lines: int):
-	if lines_label:
-		lines_label.text = "Lines: %d" % new_lines
+func _update_lines(value):
+	print("UPDATE LINES:", value, " / label:", lines_label)
+	lines_label.text = "Lines: %d" % int(value)
 
-# -------------------------
+# =========================
 # 상점 생성
-# -------------------------
+# =========================
 func _setup_shop():
-	print("--- 상점 생성 시작 ---")
+	print("\n--- [SHOP SETUP START] ---")
 
-	var economy_manager = get_tree().root.get_node_or_null("EconomyManager")
-	if not economy_manager:
-		print("❌ EconomyManager 없음")
+	if GameState.items.size() == 0:
+		push_error("❌ GameState.items 비어있음 → 버튼 생성 불가")
 		return
 
-	# 중복 생성 방지
-	if staff_container.get_child_count() > 0:
-		print("이미 생성됨 → 스킵")
-		return
+	for item in GameState.items.values():
+		print("[CREATE BUTTON] id:", item.id, "category:", item.category)
 
-	var items = economy_manager.items_db.values()
-	print("아이템 개수:", items.size())
+		var btn = preload("res://src/ui/ShopButton.tscn").instantiate()
+		btn.setup(item.id)
 
-	for item_data in items:
-		var category = str(item_data.get("category", "")).strip_edges().to_lower()
+		match item.category:
+			"staff":
+				staff_container.add_child(btn)
+				print(" → staff_container 추가 완료")
 
-		var container = _get_container(category)
-		if not container:
-			print("❌ 잘못된 카테고리:", category)
-			continue
+			"upgrade":
+				upgrade_container.add_child(btn)
+				print(" → upgrade_container 추가 완료")
 
-		# 🔥 tres 제거 → 코드로 생성
-		var data_instance = BaseItem.new()
+			"project":
+				project_container.add_child(btn)
+				print(" → project_container 추가 완료")
 
-		data_instance.id = item_data.get("id", "")
-		data_instance.item_name = item_data.get("name_key", "")
-		data_instance.base_cost = item_data.get("base_cost", 0.0)
-		data_instance.cost_type = item_data.get("cost_type", "money")
-		data_instance.effect_value = item_data.get("effect_value", 0.0)
-		data_instance.reward_funds = item_data.get("reward_funds", 0.0)
-		data_instance.category = category
+	print("--- [SHOP SETUP END] ---\n")
 
-		print("생성:", data_instance.id, category)
 
-		var btn = SHOP_BUTTON_SCENE.instantiate()
-		container.add_child(btn)
+# =========================
+# 버튼 (수동 작업)
+# =========================
+func _on_work_button_pressed():
+	print("\n===== [CLICK WORK BUTTON] =====")
 
-		# 🔥 반드시 add_child 이후
-		btn.setup(data_instance)
+	print("[BEFORE] lines:", GameState.uncommitted_lines,
+		"/ power:", GameState.manual_coding_power)
 
-	print("상점 생성 완료")
+	GameState.do_manual_work()
 
-# -------------------------
-# 컨테이너 선택
-# -------------------------
-func _get_container(category: String):
-	match category:
-		"staff":
-			return staff_container
-		"upgrade":
-			return upgrade_container
-		"project":
-			return project_container
-	return null
+	print("[AFTER] lines:", GameState.uncommitted_lines)
 
-# -------------------------
-# 컨테이너 초기화 (필요 시)
-# -------------------------
-func _clear_container(container: Control):
-	if container:
-		for child in container.get_children():
-			child.queue_free()
-
-# -------------------------
-# 클릭 처리
-# -------------------------
-func _on_work_button_pressed() -> void:
-	GameState.uncommitted_lines += GameState.manual_coding_power
-	GameState.lines_changed.emit(GameState.uncommitted_lines)
+	print("===== [CLICK END] =====\n")
