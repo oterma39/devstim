@@ -24,7 +24,7 @@ func _ready():
 	_connect_signals()
 	_setup_shop()
 	_update_funds(GameState.funds)
-	_update_lines(GameState.uncommitted_lines)
+	_update_lines(GameState.lines)
 	print("===== [MAIN READY END] =====\n")
 
 
@@ -32,34 +32,68 @@ func _ready():
 # 초기화 (데이터 로드 + 인스턴스 생성)
 # =========================
 func _setup_game():
+
 	print("\n--- [SETUP GAME START] ---")
 
 	var em = EconomyManager
 
 	em.load_csv()
+
 	print("[DATA] items_data 개수:", em.items_data.size())
 
 	if em.items_data.size() == 0:
 		push_error("❌ CSV 데이터 없음")
 		return
 
-	GameState.items.clear()  # 🔥 중요: 중복 방지
+	# 초기화
+	GameState.item_datas.clear()
+	GameState.player_items.clear()
 
 	for data in em.items_data:
-		var item = em.create_item_instance(data)
 
-		print("[ITEM]",
-			"id:", item.id,
-			"category:", item.category,
-			"cost_fund:", item.cost_fund,
-			"cost_line:", item.cost_line,
-			"lps:", item.effect_lps,
-			"lpc:", item.effect_lpc
+		# =========================
+		# ItemData 생성
+		# =========================
+		var item_data = ItemData.new()
+
+		item_data.id = data.get("Item_ID", "")
+		item_data.item_name = data.get("Name_Key", "")
+		item_data.category = data.get("Category", "").to_lower()
+
+		item_data.cost_fund = float(data.get("Cost_Fund", "0"))
+		item_data.cost_line = float(data.get("Cost_Line", "0"))
+
+		item_data.growth_rate = float(
+			data.get("Growth_Rate (r)", "0.15")
 		)
 
-		GameState.items[item.id] = item
+		item_data.effect_lps = float(
+			data.get("Effect_LPS", "0")
+		)
 
-	print("[RESULT] GameState.items:", GameState.items.size())
+		item_data.effect_lpc = float(
+			data.get("Effect_LPC", "0")
+		)
+
+		GameState.item_datas[item_data.id] = item_data
+
+		# =========================
+		# PlayerItem 생성
+		# =========================
+		var player_item = PlayerItem.new()
+		player_item.item_id = item_data.id
+
+		GameState.player_items[item_data.id] = player_item
+
+		print("[ITEM LOADED]",
+			item_data.id,
+			"/ category:", item_data.category
+		)
+
+	print("[RESULT]")
+	print("item_datas:", GameState.item_datas.size())
+	print("player_items:", GameState.player_items.size())
+
 	print("--- [SETUP GAME END] ---\n")
 
 # =========================
@@ -85,7 +119,7 @@ func _update_funds(value):
 	funds_label.text = "Funds: $%d" % int(value)
 
 func _update_lines(value):
-	print("UPDATE LINES:", value, " / label:", lines_label)
+	#print("UPDATE LINES:", value, " / label:", lines_label)
 	lines_label.text = "Lines: %d" % int(value)
 
 # =========================
@@ -94,11 +128,10 @@ func _update_lines(value):
 func _setup_shop():
 	print("\n--- [SHOP SETUP START] ---")
 
-	if GameState.items.size() == 0:
+	if GameState.item_datas.size() == 0:
 		push_error("❌ GameState.items 비어있음 → 버튼 생성 불가")
 		return
-
-	for item in GameState.items.values():
+	for item in GameState.item_datas.values():
 		print("[CREATE BUTTON] id:", item.id, "category:", item.category)
 
 		var btn = preload("res://src/ui/ShopButton.tscn").instantiate()
@@ -125,12 +158,12 @@ func _setup_shop():
 # =========================
 func _on_work_button_pressed():
 	print("\n===== [CLICK WORK BUTTON] =====")
-
-	print("[BEFORE] lines:", GameState.uncommitted_lines,
+	print("[BEFORE] lines:", GameState.lines,
 		"/ power:", GameState.manual_coding_power)
 
 	GameState.do_manual_work()
 
-	print("[AFTER] lines:", GameState.uncommitted_lines)
+
+	print("[AFTER] lines:", GameState.lines)
 
 	print("===== [CLICK END] =====\n")

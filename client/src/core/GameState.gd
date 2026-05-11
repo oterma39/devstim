@@ -6,12 +6,13 @@ signal item_updated(item_id)
 
 var funds: float = 0
 var lines: float = 0
-var uncommitted_lines: float = 0
+#var uncommitted_lines: float = 0
 
 var manual_coding_power: float = 1.0
 var auto_lines_per_sec: float = 0.0
 
-var items := {} # id → BaseItem
+var item_datas = {}
+var player_items = {}
 
 # =========================
 # 기본 루프
@@ -23,40 +24,78 @@ func _process(delta):
 # 수동 작업
 # =========================
 func do_manual_work():
+	print("A",lines,manual_coding_power)
 	lines += manual_coding_power
 	lines_changed.emit(lines)
+	print("B",lines,manual_coding_power)
 
 # =========================
 # 구매
 # =========================
 func buy_item(item_id: String) -> bool:
-	if not items.has(item_id):
+
+	# 데이터 체크
+	if not item_datas.has(item_id):
+		print("❌ item data 없음:", item_id)
 		return false
 
-	var item = items[item_id]
+	if not player_items.has(item_id):
+		print("❌ player item 없음:", item_id)
+		return false
 
-	var fund_cost = item.get_cost_fund()
-	var line_cost = item.get_cost_line()
+	var data = item_datas[item_id]
+	var player = player_items[item_id]
 
-	# 🔥 비용 체크 (둘 다)
+	var fund_cost = data.get_cost_fund(player.level)
+	var line_cost = data.get_cost_line(player.level)
+
+	print("\n===== [BUY ITEM] =====")
+	print("[ITEM]", item_id)
+	print("[LEVEL]", player.level)
+
+	print("[COST]")
+	print("fund:", fund_cost)
+	print("line:", line_cost)
+
+	print("[BEFORE]")
+	print("funds:", funds)
+	print("lines:", lines)
+
+	# 비용 체크
 	if funds < fund_cost:
-		return false
-	if lines < line_cost:
+		print("❌ 돈 부족")
 		return false
 
-	# 🔥 차감
+	if lines < line_cost:
+		print("❌ 라인 부족")
+		return false
+
+	# 차감
 	funds -= fund_cost
 	lines -= line_cost
 
-	item.level += 1
+	# 레벨 증가
+	player.level += 1
 
-	# 🔥 효과 적용
-	auto_lines_per_sec += item.effect_lps
-	manual_coding_power += item.effect_lpc
+	# 효과 적용
+	auto_lines_per_sec += data.effect_lps
+	manual_coding_power += data.effect_lpc
 
-	# 🔥 UI 갱신
+	print("[AFTER]")
+	print("funds:", funds)
+	print("lines:", lines)
+
+	print("[POWER]")
+	print("LPS:", auto_lines_per_sec)
+	print("LPC:", manual_coding_power)
+
+	# UI 갱신
 	funds_changed.emit(funds)
 	lines_changed.emit(lines)
+
+	item_updated.emit(item_id)
+
+	print("===== [BUY END] =====\n")
 
 	return true
 
